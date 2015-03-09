@@ -1,0 +1,30 @@
+---
+title: "PA1_template.Rmd"
+author: "Duccio Aiazzi"
+date: "9 Mar 2015"
+output: html_document
+---
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+The first step is to download, unpack and read the data. We also load the package *lubridate*.
+```{r}
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", "./01_rawData/activity.zip", method = "curl")
+unzip("./01_rawData/activity.zip", exdir = "./01_rawData/")
+activity_raw <- read.csv("./01_rawData/activity.csv", 
+                         header = TRUE, 
+                         stringsAsFactors = FALSE, 
+                         na.strings = "NA", 
+                         colClasses = c("integer", "character", "integer"))
+```
+
+The data is processed in order to create a variable with date and time of the mesurements. We also load the package *lubridate*.
+
+```{r}
+library(lubridate)
+activity <- data.frame(steps = activity_raw$steps)
+activity$interval <- formatC(activity_raw$interval, width = 4, flag = "0")
+activity$interval <- paste(substr(activity$interval, 1, 2), substr(activity$interval, 3, 4), sep = ":")
+activity$date.time <- paste(activity_raw$date, activity$interval)
+activity$date.time <- ymd_hm(activity$date.time)
+
